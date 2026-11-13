@@ -53,7 +53,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
         }`}
       >
         {/* Brand header */}
-        <div className="flex h-20 items-center gap-3 border-b border-navy-900 px-6">
+        <div className="flex h-20 min-h-[80px] shrink-0 items-center gap-3 border-b border-navy-900 px-6">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white shadow-md">
             <Building2 className="h-5 w-5" />
           </div>
