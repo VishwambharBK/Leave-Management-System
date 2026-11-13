@@ -51,7 +51,7 @@ The **Leave Management System (LMS)** replaces fragmented absence management wit
 - Production build configurations for cloud hosting (Vercel, Render, MongoDB Atlas).
 
 ### 4.2 Out-of-Scope (Future Enhancements)
-- Multi-tier hierarchical approval routing (e.g. Line Manager → Department Head → HR VP).
+- Multi-tier hierarchical approval routing (e.g. Line Manager -> Department Head -> HR VP).
 - Third-party paid SMS / Twilio push notifications.
 - Biometric timecard hardware integration.
 - Automated cash-equivalent leave encashment processing at year-end.
@@ -73,7 +73,7 @@ The **Leave Management System (LMS)** replaces fragmented absence management wit
 ### 6.1 Authentication & Authorization
 - **FR-AUTH-01**: System shall authenticate users via valid email and password credentials.
 - **FR-AUTH-02**: Passwords shall be hashed using `bcrypt` (10 salt rounds) before persistence; plaintext passwords must never be stored or returned in responses.
-- **FR-AUTH-03**: Authenticated sessions shall issue signed JWT tokens containing user ID and role, expiring after 24 hours.
+- **FR-AUTH-03**: Authenticated sessions shall issue signed JWT tokens containing user ID and role, expiring after 7 days.
 - **FR-AUTH-04**: Role-Based Access Control (RBAC) must reject unauthorized access attempts with HTTP 403 Forbidden.
 - **FR-AUTH-05**: Deactivated accounts must be prevented from logging in or generating new sessions.
 
@@ -98,7 +98,7 @@ The **Leave Management System (LMS)** replaces fragmented absence management wit
 
 ### 6.4 Leave Balance & Quota Computation
 - **FR-BAL-01**: Quotas are tracked independently per category across the leave year (Jan 1 to Dec 31).
-- **FR-BAL-02**: Default allocations:
+- **FR-BAL-02**: Default statutory allocations:
   - Casual Leave: 6 days
   - Sick Leave: 6 days
   - Earned Leave: 12 days
@@ -130,10 +130,10 @@ The **Leave Management System (LMS)** replaces fragmented absence management wit
 - **Stateless Architecture**: REST API backend maintains no server-side session memory, enabling horizontal scaling across cloud instances.
 - **Lightweight Polling**: In-app notifications poll at 30-second intervals to minimize server load.
 
-### 7.3 Usability & Design
-- **Enterprise Design System**: Navy blue (`#0f1f38`), professional corporate blue (`#1e40af`), and off-white backgrounds (`#f8fafc`).
-- **Responsive Layout**: Full usability across desktop (1920x1080), tablet (768x1024), and mobile viewport dimensions (375x667).
-- **Accessibility & Contrast**: Conforms to WCAG 2.1 AA standards for typography contrast and form input labeling.
+### 7.3 Usability & Responsive Design
+- **Enterprise Design System**: Navy blue (`#0f172a`), professional corporate blue (`#2563eb`), and clean slate surfaces (`#f8fafc`).
+- **Full Viewport Responsiveness**: Full usability across mobile (<640px), tablet (640px–1024px), and desktop (>1024px) dimensions.
+- **Touch & Accessibility Standards**: Touch-friendly buttons (minimum 44x44px target), accessible form field labels, and WCAG 2.1 AA typography contrast ratios.
 
 ---
 
@@ -161,110 +161,153 @@ FUNCTION calculateWorkingDays(startDate, endDate):
 
 ---
 
-## 9. Comprehensive Cloud Deployment Architecture
+## 9. Comprehensive Cloud Deployment Architecture & Operations
+
+### 9.1 Hosting Platforms & Infrastructure
+
+The Leave Management System follows a decoupled, cloud-native microservices architecture hosted across enterprise-grade platforms:
 
 ```text
-                                  ┌────────────────────────┐
-                                  │   End-User Browser     │
-                                  └───────────┬────────────┘
-                                              │ HTTPS (Port 443)
-                                              ▼
-                        ┌──────────────────────────────────────────┐
-                        │      Frontend Hosting: Vercel CDN        │
-                        │    (Vite React Single Page Application)  │
-                        └─────────────────────┬────────────────────┘
-                                              │ HTTPS REST API
-                                              ▼
-                        ┌──────────────────────────────────────────┐
-                        │      Backend Hosting: Render Web Service │
-                        │      (Node.js + Express REST API Server) │
-                        └─────────────────────┬────────────────────┘
-                                              │ TLS Mongoose Connection
-                                              ▼
-                        ┌──────────────────────────────────────────┐
-                        │     Database Tier: MongoDB Atlas         │
-                        │     (High-Availability Cloud Replica Set)│
-                        └──────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────┐
+│                   End-User Clients                     │
+│        (Mobile Phones, Tablets, Desktop Web)           │
+└───────────────────────────┬────────────────────────────┘
+                            │ HTTPS (Port 443)
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│          Frontend Hosting: Vercel Global Edge          │
+│  - Static Asset CDN with Global Edge Caching           │
+│  - Automated TLS / SSL Certificate Management          │
+│  - Continuous Deployment triggered on Git push         │
+└───────────────────────────┬────────────────────────────┘
+                            │ HTTPS REST API
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│          Backend Hosting: Railway Web Service          │
+│  - Node.js 20+ High-Performance Async Runtime          │
+│  - Express REST API with Helmet & Rate Limiting        │
+│  - Health checks & zero-downtime rolling deploys       │
+│  - Automated SSL & Nixpacks container builder          │
+└───────────────────────────┬────────────────────────────┘
+                            │ TLS Connection (Port 27017)
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│          Database Tier: MongoDB Atlas Cloud            │
+│  - Multi-AZ Cloud Replica Set (Primary/Secondary)      │
+│  - Network whitelisting & encrypted storage at rest    │
+│  - Automated daily backups & point-in-time recovery    │
+└────────────────────────────────────────────────────────┘
 ```
 
-### 9.1 Platform Specifications
-
-| Component | Selected Platform | Free Tier Capability | Deployment Strategy |
+| Component | Selected Platform | Resource Allocation | Role / Functionality |
 | :--- | :--- | :--- | :--- |
-| **Frontend** | [Vercel](https://vercel.com) | Unlimited bandwidth, global edge CDN, automatic HTTPS | Automated CI/CD Git branch push |
-| **Backend** | [Render](https://render.com) | Free web service (512MB RAM, shared CPU) | Native Node.js web service linked to Git |
-| **Database**| [MongoDB Atlas](https://www.mongodb.com/atlas) | M0 Sandbox (512MB storage, automated backups) | Cloud managed cluster with IP whitelisting |
-| **Source**  | GitHub | Unlimited private/public repositories | Git version control |
+| **Frontend SPA** | [Vercel](https://vercel.com) | Unlimited Bandwidth, Global Edge CDN | Hosts the compiled React 18 / Vite single-page application |
+| **Backend REST API** | [Railway](https://railway.app) | Node.js Container Service (Automatic Scaling, SSL) | Executes Express API controllers, business logic, calculations, and JWT validation |
+| **Database Tier** | [MongoDB Atlas](https://www.mongodb.com/atlas) | Cloud Replica Set Cluster (M0 Sandbox/Dedicated) | Authoritative persistence for users, leaves, policies, and notifications |
+| **Source Control** | [GitHub](https://github.com) | Git Repository | Centralized code repository with automated CI/CD branch webhooks |
 
-### 9.2 Environment Configuration Reference
+---
 
-#### Backend Environment Variables (Render Dashboard):
+### 9.2 Deployment Approach
+
+1. **Decoupled Client-Server Microservices**: The frontend React SPA is decoupled from the Express backend, enabling independent scaling, build optimizations, and localized zero-downtime deployments.
+2. **Stateless Backend**: The Express API maintains zero in-memory session state; all authentication relies on cryptographically signed JWT tokens, allowing multiple backend instances to serve traffic simultaneously on Railway.
+3. **Automated Git-Integrated CI/CD**: Pushing tested code to the `main` branch of the GitHub repository triggers automated production build and deployment pipelines on both Vercel and Railway without manual SSH intervention.
+
+---
+
+### 9.3 Required Cloud Services & Configuration
+
+#### Backend Environment Variables (Configured in Railway Dashboard)
 ```env
-PORT=10000
+PORT=5000
 NODE_ENV=production
-MONGODB_URI=mongodb+srv://<db_user>:<db_password>@cluster0.mongodb.net/leave_management?retryWrites=true&w=majority
-JWT_SECRET=super_secure_production_quality_jwt_secret_key_leave_management_2026_random_bytes
-JWT_EXPIRES_IN=1d
-CLIENT_URL=https://leave-management-system-frontend.vercel.app
-ADMIN_NAME=System Administrator
-ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD=Admin@ProductionSecure123!
+MONGO_URI=mongodb+srv://<your_username>:<your_database_password>@<your_cluster>.mongodb.net/lms_production?retryWrites=true&w=majority
+JWT_SECRET=<your_secure_jwt_secret_key>
+JWT_EXPIRES_IN=7d
+CORS_ORIGIN=https://leave-management-system-client.vercel.app
 ```
 
-#### Frontend Environment Variables (Vercel Dashboard):
+#### Frontend Environment Variables (Configured in Vercel Dashboard)
 ```env
-VITE_API_BASE_URL=https://leave-management-system-backend.onrender.com/api
+VITE_API_URL=https://leave-management-system-production.up.railway.app/api
 ```
 
-### 9.3 Build and Execution Commands
-- **Backend Build**: `npm install`
-- **Backend Start**: `npm start` (Executes `node server.js`)
-- **Frontend Build**: `npm run build` (Executes `vite build`)
-- **Frontend Output Directory**: `dist`
+---
 
 ### 9.4 Step-by-Step Initial Deployment Procedure
 
-#### Phase 1: Database Setup (MongoDB Atlas)
-1. Sign in to MongoDB Atlas and create a free M0 cluster in your preferred region.
-2. In **Security → Database Access**, create an admin user (e.g. `lms_admin`) with password and read/write privileges.
-3. In **Security → Network Access**, add IP `0.0.0.0/0` (allowing cloud platform connectivity).
-4. In **Deployments → Databases**, click **Connect → Drivers (Node.js)** and copy your connection string.
+#### Step 1: MongoDB Atlas Database Setup
+1. Log in to [MongoDB Atlas](https://cloud.mongodb.com) and create an organization cluster in your target region.
+2. Under **Security -> Database Access**, create an application database user with read and write permissions (e.g., `<your_db_username>`).
+3. Under **Security -> Network Access**, click **Add IP Address** and allow access from anywhere (`0.0.0.0/0`) so that cloud hosting services (Railway) can connect to the database.
+4. Under **Deployment -> Database -> Connect -> Drivers (Node.js)**, copy your connection string and replace `<your_database_password>` with your secure user password.
 
-#### Phase 2: Backend Service Deployment (Render)
-1. Link your GitHub repository in Render.
-2. Create a new **Web Service** selecting the repository.
-3. Specify **Root Directory**: `backend`.
-4. Specify **Runtime**: `Node`.
-5. Set **Build Command**: `npm install`.
-6. Set **Start Command**: `npm start`.
-7. In the **Environment Variables** tab, add all keys specified in Section 9.2.
-8. Click **Create Web Service**. Wait for build completion.
-9. Verify deployment via the health check endpoint: `https://<your-render-url>/api/health`.
+#### Step 2: Backend Deployment on Railway
+1. Sign in to [Railway](https://railway.app) using your GitHub account.
+2. Click **New Project -> Deploy from GitHub repo** and select `VishwambharBK/Leave-Management-System`.
+3. In the Railway Service canvas, click on the service card and open **Settings**:
+   - **Root Directory**: Set to `/backend` (so Railway builds and runs only the backend service).
+   - **Build Command**: Auto-detected (or `npm install`).
+   - **Start Command**: `npm start` (which executes `node server.js`).
+4. Switch to the **Variables** tab and add the production environment variables:
+   - `NODE_ENV`: `production`
+   - `MONGO_URI`: `mongodb+srv://<your_username>:<your_database_password>@<your_cluster>.mongodb.net/lms_production?retryWrites=true&w=majority`
+   - `JWT_SECRET`: `<your_secure_jwt_secret_key>`
+   - `JWT_EXPIRES_IN`: `7d`
+   - `CORS_ORIGIN`: `https://<your-vercel-domain>.vercel.app`
+5. In **Settings -> Networking**, click **Generate Domain** to assign a public HTTPS address (e.g., `https://leave-management-system-production.up.railway.app`).
+6. Verify deployment by probing the health check endpoint: `https://<railway-domain>/api/health` — must return status `{"status":"UP"}`.
 
-#### Phase 3: Frontend Deployment (Vercel)
-1. Log in to Vercel and click **Add New Project**.
-2. Import the same repository.
-3. In Project Settings, set **Root Directory** to `frontend`.
-4. Framework Preset will auto-detect as `Vite`.
-5. Under **Environment Variables**, add `VITE_API_BASE_URL` pointing to your Render backend API URL (`https://<backend-url>/api`).
-6. Click **Deploy**. Vercel will bundle the production distribution into `dist`.
+#### Step 3: Frontend Deployment on Vercel
+1. Sign in to [Vercel](https://vercel.com) and click **Add New -> Project**.
+2. Import the GitHub repository `Leave-Management-System`.
+3. In the project configuration:
+   - **Framework Preset**: `Vite`
+   - **Root Directory**: Click edit and set to `frontend`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+4. Under **Environment Variables**, create the key:
+   - `VITE_API_URL`: Value set to `https://<your-railway-domain>/api`
+5. Click **Deploy**. Vercel will bundle the production distribution and assign a live production URL (e.g. `https://leave-management-system-client.vercel.app`).
+6. Return to Railway and update the backend's `CORS_ORIGIN` variable with the final Vercel frontend URL.
 
-#### Phase 4: Production Verification Procedure
-1. Navigate to the live Vercel URL.
-2. Log in with initial administrator credentials.
-3. Provision an initial staff member from **Employees → Add New Employee**.
-4. Log out and log in as the newly created staff member.
-5. Apply for leave; verify that working days exclude weekends and that available balance updates.
-6. Log in as Administrator; approve the pending filing and ensure the status reflects as `Approved` on both ends.
+#### Step 4: Database Seeding & Production Smoke Testing
+1. Execute the remote database seeder to initialize default policies and admin credentials:
+   ```bash
+   MONGO_URI="<your-mongodb-atlas-uri>" npm --prefix backend run seed
+   ```
+2. Navigate to the live Vercel URL in your browser.
+3. Log in with the initial administrator credentials (`admin@lms.local` / `Admin@123456`).
+4. Provision a new employee, log out, log in as that employee, and file a leave request.
+5. Log back in as Administrator, review the request in the pending queue, approve it with remarks, and ensure that balance deductions reflect accurately.
 
-### 9.5 Application Updates & Continuous Deployment (CI/CD)
-- Both Vercel and Render connect directly to the Git repository.
-- Pushing commits to the `main` branch automatically triggers incremental production builds on Vercel and zero-downtime rolling deploys on Render.
+---
 
-### 9.6 Rollback & Incident Recovery
-- **Frontend Rollback**: Vercel stores immutable deployment artifacts for every Git commit. In the Vercel dashboard, click **Deployments → Instant Rollback** to revert to any previous healthy commit within seconds.
-- **Backend Rollback**: In the Render dashboard, navigate to **Deploys** and select **Rollback to this deploy** on any previous successful build.
-- **Database Backup**: MongoDB Atlas M0 snapshots allow point-in-time state restoration via the Atlas UI.
+### 9.5 Steps to Update the Application in Production
+
+To deploy updates, bug fixes, or new features to the live production application:
+
+1. **Local Verification**: Ensure all automated test suites pass locally before publishing changes:
+   ```bash
+   npm test
+   npm run build
+   ```
+2. **Commit Changes**: Commit the updates using conventional commit messages:
+   ```bash
+   git add .
+   git commit -m "feat(module): description of feature or fix"
+   ```
+3. **Push to Remote Main Branch**:
+   ```bash
+   git push origin main
+   ```
+4. **Automated CI/CD Execution**:
+   - **Vercel** detects the commit on `main`, runs `vite build`, and deploys the new static bundles to its global edge network in ~30 seconds with zero downtime.
+   - **Railway** detects the commit on `main`, pulls changes in `/backend`, rebuilds the container via Nixpacks, performs container health checks, and shifts incoming traffic with zero downtime.
+5. **Zero-Downtime Rollback Mechanism**:
+   - If an unexpected production issue occurs on the frontend, navigate to **Vercel -> Deployments**, locate the last known healthy deployment, and click **Instant Rollback**.
+   - If an issue occurs on the backend, navigate to **Railway -> Deployments**, select the previous successful deployment card, and click **Rollback**.
 
 ---
 
@@ -287,4 +330,4 @@ VITE_API_BASE_URL=https://leave-management-system-backend.onrender.com/api
 | **AC-13** | Automated backend integration test suite passes 100% | Verified (20/20 Passed) |
 | **AC-14** | Automated frontend component test suite passes 100% | Verified (5/5 Passed) |
 | **AC-15** | Production build bundles clean static assets with zero errors | Verified |
-
+| **AC-16** | Comprehensive deployment architecture and operational update procedures documented | Verified |

@@ -1,377 +1,283 @@
-# Leave Management System (LMS) – MERN Stack
+# Leave Management System (LMS) – Enterprise MERN Web Application
 
-A modern, production-grade enterprise Leave Management System engineered using the **MERN** stack (MongoDB, Express.js, React 18, Node.js). Designed for corporate organizations to streamline employee leave applications, quota tracking, role-based workflows, and automated administrator approvals.
+A modern, production-grade enterprise Leave Management System engineered using the **MERN** stack (MongoDB, Express.js, React 18, Node.js). Designed for corporate organizations to streamline employee leave applications, quota tracking, role-based workflows, and automated administrator approvals with real-time balance integrity.
 
 ---
 
-## 1. Executive Project Overview
+## 1. Project Overview
 
 Managing employee time-off, statutory leave entitlements, and company-specific quota rules using manual emails or spreadsheets leads to error-prone balance calculations, unmonitored absenteeism, and compliance bottlenecks. 
 
 The **Leave Management System (LMS)** centralizes the complete employee absence lifecycle into a secure, responsive, and auditable web portal. The system enforces strict business logic:
-- Real-time leave balance deduction and overbooking protection.
-- Automated weekend exclusion when calculating working days.
-- Independent balance tracking across leave categories (Casual, Sick, and Earned Leave).
-- Role-based separation of concerns between standard Employees and HR Administrators.
+- **Real-Time Quota Deduction**: Available balance dynamically deducts approved leaves and locks pending requests to prevent overbooking.
+- **Automated Weekend Exclusion**: Leave calculator automatically excludes Saturdays and Sundays when computing net working days.
+- **Category Quota Isolation**: Independent tracking across Casual, Sick, and Earned Leave entitlements.
+- **Strict Role-Based Access Control (RBAC)**: Enforces separation between standard Employees and HR Administrators across both the frontend router and backend API gateways.
+- **Full Audit Trail**: Approvals and rejections record immutable administrator IDs, timestamps, and mandatory remarks.
 
 ---
 
-## 2. Technology Stack
+## 2. Key Features
+
+### Employee Module (Self-Service)
+- **Executive Dashboard**: Real-time statistical KPI cards (Total Allocated, Used, Remaining, Pending, Approved, Rejected) derived directly from live database records.
+- **Interactive Visualizations**: Interactive Recharts utilization bar charts and status distribution pie charts.
+- **Smart Leave Filing**:
+  - Validates date ranges, disallows past start dates, and blocks inverted date pairs.
+  - Automatically calculates net working days excluding weekends.
+  - Rejects filings with zero working days or overlapping date spans.
+  - Validates remaining balance before submission and holds requested days in `Pending` status.
+  - Supports optional supporting medical/document attachments.
+- **Leave History & Audit Log**: Searchable, filterable (by status and leave category), and paginated log of all applications with administrator remarks.
+- **Quota & Balance Breakdown**: Comprehensive annual allocation cards with visual progress bars indicating used vs. available days for the leave year.
+- **Profile & Credentials Management**: View corporate assignments (Employee ID, Department, Designation, Joining Date) and securely update password.
+
+### Administrator Module (HR & Management)
+- **Centralized Admin Dashboard**: High-level organizational overview showing total headcount, total filings, pending review queue, approved absences, and currently absent staff.
+- **Departmental Absence Analytics**: Monthly filing trends and department-wise absence distribution.
+- **Atomic Leave Processing**:
+  - Approve pending requests with optional remarks and atomic quota deduction.
+  - Reject pending filings with **mandatory** rejection reasons recorded in the audit trail.
+  - Concurrency-safe atomic updates to prevent double-deduction.
+- **Employee Management**:
+  - Provision new staff members with auto-generated credentials.
+  - Update employee department, designation, and contact info.
+  - Reset employee passwords securely.
+  - Soft deactivation/activation workflow to preserve historical leave records for audit compliance.
+- **Leave Policy Configuration**: Configure annual quotas (Casual, Sick, Earned Leave) and toggle document upload mandates per category.
+- **Admin Profile & Security**: Superuser credential management and system authorization parameters.
+
+### Shared & Platform Features
+- **In-App Notification Engine**: Lightweight polling notification bell with unread counters, mark-as-read, and mark-all-read actions.
+- **Responsive Layout**: Seamless experience across mobile (<640px), tablet (640px–1024px), and desktop (>1024px) viewports with collapsible sidebar navigation and touch-friendly data tables.
+
+---
+
+## 3. System Architecture
+
+The application implements a decoupled, three-tier client-server architecture:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                       Client Tier                           │
+│  React 18 SPA (Vite) + Tailwind CSS + Lucide Icons + Recharts│
+│  Context API (Auth State) + React Router v7 + Axios Interceptor│
+└──────────────────────────────┬──────────────────────────────┘
+                               │ HTTPS / REST JSON
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                     Application Tier                        │
+│   Node.js + Express.js REST API                             │
+│   - JWT Bearer Authentication Middleware                    │
+│   - Role-Based Authorization Guards (Employee vs Admin)     │
+│   - Working-Day Calculation Engine (Weekend Exclusion)       │
+│   - Zod Input Validation & Sanitization                     │
+│   - Multer Document Upload Handler                          │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ Mongoose ODM / TCP 27017
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                       Database Tier                         │
+│            MongoDB Atlas Cloud Replica Set Cluster          │
+│ Collections: users, leaves, leavepolicies, notifications     │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 4. Technology Stack
 
 | Layer | Technology | Version | Purpose |
 | :--- | :--- | :--- | :--- |
-| **Frontend UI** | React.js | `18.3.1` | Component-based interactive user interface |
-| **Build Tool** | Vite | `6.1.0` | Ultra-fast HMR and optimized production bundling |
-| **Styling** | Tailwind CSS | `3.4.17` | Utility-first responsive enterprise styling |
+| **Frontend UI** | React.js | `18.3.1` | Component-driven declarative user interface |
+| **Build Tool** | Vite | `6.1.0` | Ultra-fast HMR and production asset bundling |
+| **Styling** | Tailwind CSS | `3.4.17` | Utility-first responsive enterprise design system |
 | **Routing** | React Router DOM | `7.1.5` | Client-side routing with protected and role-based guards |
-| **State & Auth** | Context API & LocalStorage | Built-in | Global session management, reactive state updates |
-| **Form Management**| React Hook Form & Zod | `7.54` / `3.24`| Schema validation, form state control, and error handling |
-| **Charts & Visuals** | Recharts | `2.15.1` | Workforce analytics, leave distribution & monthly trends |
-| **Icons** | Lucide React | `0.475.0` | Clean, modern iconography |
-| **Notifications** | React Hot Toast | `2.5.2` | Non-blocking user feedback & action status toasts |
-| **Backend API** | Node.js & Express.js | `4.21.2` | RESTful API server with MVC architecture |
-| **Database** | MongoDB & Mongoose | `8.10.1` | Document database with schema indexing & in-memory fallback |
-| **Security** | Helmet, bcryptjs, JWT, Rate-Limit | `8.1` / `3.0` | Secure HTTP headers, password hashing, rate limiting |
-| **Testing** | Jest, Supertest, Vitest, RTL | `29.7` / `3.0` | Automated unit, integration, and API test coverage |
+| **State & Auth** | Context API & LocalStorage | Built-in | Global authentication, session persistence, and user profile state |
+| **HTTP Client** | Axios | `1.7.9` | Promised-based HTTP client with automatic JWT bearer interceptors |
+| **Form Validation** | React Hook Form & Zod | `7.54` / `3.24` | Schema-driven client and server-side form validation |
+| **Charts** | Recharts | `2.15.1` | Responsive SVG analytics and data visualization |
+| **Notifications** | React Hot Toast | `2.5.1` | Interactive toast notifications for user actions |
+| **Icons** | Lucide React | `0.475.0` | Modern, consistent icon toolkit |
+| **Backend Runtime**| Node.js | `v20+` / `v25` | High-performance asynchronous JavaScript runtime |
+| **Framework** | Express.js | `4.21.2` | REST API routing, middleware, and controller architecture |
+| **Database** | MongoDB Atlas | Cloud M0 | Fully managed cloud NoSQL database cluster |
+| **ODM** | Mongoose | `8.9.5` | Schema validation, indexes, and document modeling |
+| **Auth Security** | JWT & bcryptjs | `9.0.2` / `2.4.3` | Token-based stateless auth and salted password hashing |
+| **File Uploads** | Multer | `1.4.5` | Secure multipart/form-data upload handling |
+| **Testing** | Jest & Supertest | `29.7.0` / `7.0.0` | Automated backend integration testing suite |
+| **Testing** | Vitest & React Testing Library | `3.2.7` / `16.2.0` | Frontend component unit testing suite |
 
 ---
 
-## 3. High-Level Architecture Overview
+## 5. Live Deployment URLs & Hosting Architecture
 
-```mermaid
-flowchart TD
-    subgraph Client["Frontend Client (React + Vite)"]
-        UI["Tailwind Enterprise UI"]
-        AuthContext["Auth Context & Token Interceptors"]
-        EmpPages["Employee Portal (Dashboard, Apply, History, Balance, Profile)"]
-        AdminPages["Admin Portal (Dashboard, Requests, Staff Management, Policies)"]
-    end
-
-    subgraph Server["Backend Server (Express REST API)"]
-        Middleware["Auth & RBAC Guards / Helmet / RateLimiter"]
-        Controllers["Controllers (Auth, Leave, Employee, Admin, Policy, Notification)"]
-        Services["Business Services (Leave Balance Calculator, Working Day Engine)"]
-    end
-
-    subgraph Database["Data Tier (MongoDB)"]
-        Atlas["MongoDB Atlas / Local MongoDB"]
-        MemDB["MongoMemoryServer (Development & Test Suites)"]
-    end
-
-    Client -->|HTTPS REST with Bearer JWT| Server
-    Server -->|Mongoose Connection Pool| Database
-```
+- **GitHub Repository**: [https://github.com/VishwambharBK/Leave-Management-System.git](https://github.com/VishwambharBK/Leave-Management-System.git)
+- **Frontend Live URL (Vercel Edge)**: `https://leave-management-system-client.vercel.app` *(or custom domain)*
+- **Backend API Live URL (Railway)**: `https://leave-management-system-production.up.railway.app`
+- **Database Tier**: MongoDB Atlas Cloud (Managed Multi-AZ Replica Set Cluster)
+- **API Health Check**: `https://leave-management-system-production.up.railway.app/api/health`
 
 ---
 
-## 4. Key Functional Features
+## 6. Environment Variables
 
-### 4.1 Employee Self-Service Module
-- **Intuitive Dashboard**: Overview cards with total quota, used days, remaining balance, pending reviews, and dynamic status distribution charts.
-- **Leave Application Engine**:
-  - Live automatic working-day counter that excludes Saturdays and Sundays.
-  - Strict validation preventing past start dates and inverted date ranges.
-  - Live available quota verification preventing overbooking before submission.
-  - Overlap check preventing duplicate filings for identical calendar dates.
-  - Document attachment upload (PDF, DOC, DOCX, PNG, JPG) with 5MB cap.
-- **Leave History & Tracking**:
-  - Filter by status (`Pending`, `Approved`, `Rejected`, `Cancelled`).
-  - Search by reason or administrator remarks.
-  - Pagination and instant cancellation of pending applications.
-- **Quota Breakdown**:
-  - Detailed balance metrics for Casual Leave (6d), Sick Leave (6d), and Earned Leave (12d).
-  - Visualization meters displaying utilized vs available balances.
-- **Profile & Security**: Update profile name and self-service password changes.
+### Backend Configuration (`backend/.env`)
 
-### 4.2 Administrator Management Module
-- **Executive HR Dashboard**: Real-time stats for total employees, active staff, total leaves filed, pending approval queue, and employees absent today.
-- **Request Review System**:
-  - Comprehensive filters by department, leave category, status, and dates.
-  - Modal viewing employee information, past leaves, and supporting documents.
-  - Atomic approval verifying remaining balance before committing approval.
-  - Mandatory rejection reason recording.
-  - In-app notification delivery to employees upon status decision.
-- **Staff Provisioning & Management**:
-  - Create new employee profiles with unique Employee ID and email verification.
-  - Edit employee details (department, designation, role).
-  - Account deactivation (soft toggle preventing deletion of historical records).
-  - Superuser password reset functionality.
-- **Leave Policy Administration**: Live configuration of annual allocations per leave category and attachment mandate enforcement.
+| Variable | Required | Default / Example Value | Description |
+| :--- | :---: | :--- | :--- |
+| `PORT` | No | `5000` | Port on which the Express server listens |
+| `NODE_ENV` | Yes | `development` / `production` | Execution environment mode |
+| `MONGO_URI` | Yes | `mongodb+srv://<your_username>:<your_database_password>@<your_cluster>.mongodb.net/<database_name>?retryWrites=true&w=majority` | MongoDB Atlas connection string |
+| `JWT_SECRET` | Yes | `<your_secure_random_jwt_secret_key>` | Cryptographic secret key for signing JWT tokens |
+| `JWT_EXPIRES_IN` | No | `7d` | Token validity duration |
+| `CORS_ORIGIN` | Yes | `http://localhost:5173,http://localhost:5174` *(or production frontend domain)* | Allowed CORS origins for browser security |
+
+### Frontend Configuration (`frontend/.env`)
+
+| Variable | Required | Default / Example Value | Description |
+| :--- | :---: | :--- | :--- |
+| `VITE_API_URL` | Yes | `http://localhost:5000/api` *(or production API URL)* | Base URL for all Axios API requests |
 
 ---
 
-## 5. Repository Structure
-
-```text
-Leave Management System/
-├── backend/
-│   ├── config/
-│   │   └── db.js                    # Database connection with MongoMemoryServer fallback
-│   ├── controllers/
-│   │   ├── adminController.js       # Executive stats, approvals, employee CRUD
-│   │   ├── authController.js        # Login, logout, session check, password change
-│   │   ├── employeeController.js    # Profile & self-service balance endpoints
-│   │   ├── leaveController.js       # Leave application, cancellation, history
-│   │   ├── notificationController.js# In-app notifications
-│   │   └── policyController.js      # Leave policy configuration
-│   ├── middleware/
-│   │   ├── authMiddleware.js        # JWT extraction & active user validation
-│   │   ├── errorMiddleware.js       # Centralized 404 & error formatting
-│   │   ├── roleMiddleware.js        # RBAC role authorization
-│   │   ├── uploadMiddleware.js      # Multer file storage & type filtering
-│   │   └── validationMiddleware.js  # Zod schema request validation
-│   ├── models/
-│   │   ├── Leave.js                 # Leave request schema with indexes
-│   │   ├── LeavePolicy.js           # Yearly policy allocation schema
-│   │   ├── Notification.js          # In-app notification schema
-│   │   └── User.js                  # User schema with bcrypt hashing
-│   ├── routes/
-│   │   ├── adminRoutes.js           # /api/admin/*
-│   │   ├── authRoutes.js            # /api/auth/*
-│   │   ├── employeeRoutes.js        # /api/employees/*
-│   │   ├── leaveRoutes.js           # /api/leaves/*
-│   │   ├── notificationRoutes.js    # /api/notifications/*
-│   │   └── policyRoutes.js          # /api/policies/*
-│   ├── scripts/
-│   │   └── seedAdmin.js             # Idempotent database seeder
-│   ├── services/
-│   │   ├── leaveService.js          # Working days, overlap, balance calculation
-│   │   └── notificationService.js   # Automated user & admin notifications
-│   ├── tests/
-│   │   └── api.test.js              # 20 automated integration tests (Supertest + Jest)
-│   ├── validators/
-│   │   └── schemas.js               # Zod validation schemas
-│   ├── .env.example
-│   ├── package.json
-│   └── server.js                    # Express application entrypoint
-├── docs/
-│   ├── BRD.md                       # Comprehensive Business Requirements Document
-│   └── TESTING.md                   # Quality Assurance & Test Execution Report
-├── frontend/
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── common/              # Badge, Modal, ConfirmDialog, StatCard, NotificationDropdown
-│   │   │   └── layout/              # Navbar, Sidebar, DashboardLayout
-│   │   ├── context/
-│   │   │   └── AuthContext.jsx      # Session provider & authentication state
-│   │   ├── pages/
-│   │   │   ├── admin/               # Dashboard, LeaveRequests, Employees, Policy, Profile
-│   │   │   ├── auth/                # LoginPage
-│   │   │   └── employee/            # Dashboard, ApplyLeave, LeaveHistory, LeaveBalance, Profile
-│   │   ├── routes/                  # ProtectedRoute, RoleBasedRoute
-│   │   ├── services/                # Axios API instances & service modules
-│   │   ├── test/                    # RTL & Vitest test suites
-│   │   ├── App.jsx                  # Main application router
-│   │   ├── index.css                # Tailwind CSS imports
-│   │   └── main.jsx                 # React root renderer
-│   ├── .env.example
-│   ├── index.html
-│   ├── package.json
-│   ├── tailwind.config.js
-│   └── vite.config.js
-├── .gitignore
-├── package.json                     # Root orchestrator scripts
-└── README.md
-```
-
----
-
-## 6. Local Setup and Installation
+## 7. Local Setup Instructions
 
 ### Prerequisites
-- **Node.js**: v18.x, v20.x, or v22+ (verified on Node v25.2.0)
-- **npm**: v9.x or v10+
-- **MongoDB**: Local MongoDB instance (default: `mongodb://localhost:27017/leave_management`) or MongoDB Atlas URI. *(Note: Backend includes automatic in-memory fallback for development and testing if local mongod is not installed).*
+- **Node.js**: v18.0.0 or higher (v20+ LTS recommended)
+- **npm**: v9.0.0 or higher
+- **MongoDB Atlas Account**: Or a locally accessible MongoDB instance
 
-### Step-by-Step Installation
+### Step 1: Clone Repository
+```bash
+git clone https://github.com/VishwambharBK/Leave-Management-System.git
+cd Leave-Management-System
+```
 
-1. **Clone the repository**:
-   ```bash
-   git clone <repository_url>
-   cd "Leave Management System"
-   ```
+### Step 2: Install Dependencies
+Install dependencies for root, backend, and frontend concurrently:
+```bash
+# Install root, backend, and frontend dependencies
+npm run install:all
+```
 
-2. **Install all dependencies (Root, Backend, and Frontend)**:
-   ```bash
-   npm run install:all
-   ```
-
-3. **Configure Environment Variables**:
-   Copy the example environment files into place:
-   ```bash
-   # Backend
-   cp backend/.env.example backend/.env
-
-   # Frontend
-   cp frontend/.env.example frontend/.env
-   ```
-
-   *Backend `.env` options:*
+### Step 3: Configure Environment Variables
+1. **Backend Environment**:
+   Create `backend/.env` (or copy from `backend/.env.example`):
    ```env
    PORT=5000
    NODE_ENV=development
-   MONGODB_URI=mongodb://localhost:27017/leave_management
-   JWT_SECRET=production_quality_jwt_secret_key_leave_management_2026_secure_random
-   JWT_EXPIRES_IN=1d
-   CLIENT_URL=http://localhost:5173
-   ADMIN_NAME=System Administrator
-   ADMIN_EMAIL=admin@example.com
-   ADMIN_PASSWORD=Admin@123456
+   MONGO_URI=mongodb+srv://<your_username>:<your_database_password>@<your_cluster>.mongodb.net/lms_production?retryWrites=true&w=majority
+   JWT_SECRET=<your_secure_jwt_secret_key>
+   JWT_EXPIRES_IN=7d
+   CORS_ORIGIN=http://localhost:5173,http://localhost:5174
    ```
 
-   *Frontend `.env` options:*
+2. **Frontend Environment**:
+   Create `frontend/.env` (or copy from `frontend/.env.example`):
    ```env
-   VITE_API_BASE_URL=/api
+   VITE_API_URL=http://localhost:5000/api
    ```
 
-4. **Seed Initial Database (Admin, Policies, and Sample Staff)**:
-   ```bash
-   npm run seed
-   ```
+### Step 4: Seed Database with Initial Data
+Initialize default statutory leave policies and demo accounts:
+```bash
+npm run seed
+```
 
-   *Default Seed Credentials:*
-   | Role | Email | Password |
-   | :--- | :--- | :--- |
-   | **System Administrator** | `admin@example.com` | `Admin@123456` |
-   | **Staff Engineer** | `sarah.connor@example.com` | `Employee@123` |
-   | **Sales Manager** | `michael.scott@example.com` | `Employee@123` |
-   | **HR Coordinator** | `pam.beesly@example.com` | `Employee@123` |
+### Step 5: Start Development Servers
+Start both the backend API (port 5000) and frontend portal (port 5173) in one terminal:
+```bash
+npm run dev
+```
 
-5. **Start Development Servers**:
-   - Backend API (`http://localhost:5000`):
-     ```bash
-     npm run dev:backend
-     ```
-   - Frontend Portal (`http://localhost:5173`):
-     ```bash
-     npm run dev:frontend
-     ```
+- **Frontend Application**: [http://localhost:5173](http://localhost:5173)
+- **Backend API Health Check**: [http://localhost:5000/api/health](http://localhost:5000/api/health)
 
 ---
 
-## 7. Testing Suite Execution
+## 8. Demo Credentials
 
-Both backend and frontend feature automated test suites that can be executed independently or together.
+| Role | Name | Email | Password | Assigned Permissions |
+| :--- | :--- | :--- | :--- | :--- |
+| **System Admin** | System Administrator | `admin@lms.local` | `Admin@123456` | Full administrative access, leave reviews, staff provisioning, policy configuration |
+| **Employee** | Alex Morgan | `alex.morgan@lms.local` | `Employee@123` | Employee portal, leave filings, balance tracking, personal history |
+| **Employee** | Sarah Jenkins | `sarah.jenkins@lms.local` | `Employee@123` | Employee portal, leave filings, balance tracking |
+| **Employee** | David Chen | `david.chen@lms.local` | `Employee@123` | Employee portal, leave filings, balance tracking |
 
-### Run Backend Integration Tests (Jest + Supertest):
+---
+
+## 9. Comprehensive API Reference
+
+All protected endpoints require an `Authorization: Bearer <token>` header obtained from `/api/auth/login`.
+
+### Authentication Endpoints (`/api/auth`)
+| Method | Endpoint | Auth | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/login` | Public | Authenticates user credentials and returns JWT token + user profile |
+| `POST` | `/api/auth/logout` | Public | Clears client session cookie/token |
+| `GET` | `/api/auth/me` | User | Returns authenticated profile of the current token bearer |
+| `PUT` | `/api/auth/change-password` | User | Updates user password after verifying current password |
+
+### Leave Management Endpoints (`/api/leaves`)
+| Method | Endpoint | Auth | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/leaves` | Employee | Submit a leave request (supports `multipart/form-data` with document attachment) |
+| `GET` | `/api/leaves/my` | Employee | Retrieve paginated leave history for the logged-in employee (with status/type filters) |
+| `GET` | `/api/leaves/calculate-days`| Employee | Computes working days excluding Saturdays/Sundays for given start and end dates |
+| `DELETE`| `/api/leaves/:id` | Employee | Cancels a pending leave filing (releases quota holds) |
+
+### Employee Profile & Quota Endpoints (`/api/employees`)
+| Method | Endpoint | Auth | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/employees/leave-balance`| Employee | Returns detailed category balances (Allocated, Used, Pending, Available) |
+| `PUT` | `/api/employees/profile` | Employee | Updates permitted profile details (e.g., Full Name) |
+| `GET` | `/api/notifications` | User | Retrieves in-app notification feed and unread counter |
+| `PATCH`| `/api/notifications/:id/read`| User | Marks a single notification as read |
+| `PATCH`| `/api/notifications/read-all`| User | Marks all notifications as read |
+
+### Administrator Endpoints (`/api/admin`)
+| Method | Endpoint | Auth | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/admin/dashboard` | Admin | Computes executive metrics: headcount, total filings, queues, and departmental stats |
+| `GET` | `/api/admin/leaves` | Admin | Lists all organization-wide leave applications with department/status filters |
+| `PATCH`| `/api/admin/leaves/:id/approve` | Admin | Approves a pending request with remarks and applies atomic balance deduction |
+| `PATCH`| `/api/admin/leaves/:id/reject` | Admin | Rejects a pending request with mandatory remarks |
+| `GET` | `/api/admin/employees` | Admin | Lists all staff records with pagination and search |
+| `POST` | `/api/admin/employees` | Admin | Creates a new employee account with temporary credentials |
+| `PUT` | `/api/admin/employees/:id` | Admin | Updates employee profile (department, designation, name) |
+| `PATCH`| `/api/admin/employees/:id/toggle-status`| Admin | Activates or soft-deactivates an employee account |
+| `POST` | `/api/admin/employees/:id/reset-password`| Admin | Resets employee password to a secure temporary password |
+| `GET` | `/api/admin/policies` | Admin | Retrieves annual statutory leave allocation policies |
+| `PUT` | `/api/admin/policies/:id` | Admin | Modifies annual quotas and attachment mandates |
+
+---
+
+## 10. Automated Testing & Verification
+
+The project includes automated integration tests for backend services and component unit tests for the frontend:
+
 ```bash
-npm run test:backend
-```
-*Coverage: 20 integration tests verifying authentication, authorization guards, leave application validation (past dates, zero working days, weekend exclusion, overlap checking, insufficient balances), admin approval/rejection workflows, and authoritative balance calculations.*
-
-### Run Frontend Component Tests (Vitest + React Testing Library):
-```bash
-npm run test:frontend
-```
-*Coverage: Component tests verifying login form rendering, form validation errors, badge status mapping, KPI metric cards, and confirmation modal dialog workflows.*
-
-### Run Complete Test Suite:
-```bash
+# Run all automated tests (backend + frontend)
 npm test
-```
 
-### Build Production Bundle:
-```bash
+# Run backend integration tests (Jest + Supertest)
+npm run test:backend
+
+# Run frontend component tests (Vitest + React Testing Library)
+npm run test:frontend
+
+# Run production frontend build
 npm run build
 ```
 
----
-
-## 8. REST API Reference
-
-### Authentication
-- `POST /api/auth/login` – Authenticate employee/admin, returns JWT & user profile.
-- `POST /api/auth/logout` – Clear authentication cookie.
-- `GET /api/auth/me` – Retrieve currently logged-in user profile (Bearer token required).
-- `PUT /api/auth/change-password` – Self-service password change.
-
-### Employee Self-Service
-- `GET /api/employees/profile` – Retrieve current employee details.
-- `PUT /api/employees/profile` – Update permitted profile fields (Name).
-- `GET /api/employees/leave-balance` – Query authoritative balance breakdown for a year.
-- `GET /api/employees/leave-history` – Query paginated personal leave applications.
-
-### Leaves
-- `POST /api/leaves` – Submit leave request (multipart upload supported for attachments).
-- `GET /api/leaves/my` – Retrieve personal leave list with filters.
-- `GET /api/leaves/:id` – Retrieve single leave details.
-- `PATCH /api/leaves/:id/cancel` – Cancel pending leave filing.
-
-### Administration (Admin Only)
-- `GET /api/admin/dashboard` – Executive KPIs, monthly trends, and pending queue.
-- `GET /api/admin/employees` – Search and filter all staff records with pagination.
-- `POST /api/admin/employees` – Create new staff profile.
-- `GET /api/admin/employees/:id` – View individual employee profile, balances, and history.
-- `PUT /api/admin/employees/:id` – Update employee organization metadata.
-- `PATCH /api/admin/employees/:id/status` – Soft activate / deactivate staff account.
-- `PATCH /api/admin/employees/:id/reset-password` – Reset employee password.
-- `GET /api/admin/leaves` – Comprehensive review of all organizational leaves.
-- `PATCH /api/admin/leaves/:id/approve` – Approve pending leave with optional remarks.
-- `PATCH /api/admin/leaves/:id/reject` – Reject pending leave with mandatory remarks.
-- `GET /api/admin/reports` – Aggregated yearly attendance reports.
-
-### Policy & Notifications
-- `GET /api/policies` – Fetch annual quotas and attachment requirements.
-- `PUT /api/policies/:id` – Update policy allocation or attachment rules (Admin only).
-- `GET /api/notifications` – Fetch user in-app notifications and unread counter.
-- `PATCH /api/notifications/:id/read` – Mark notification as read.
-- `PATCH /api/notifications/read-all` – Mark all notifications as read.
+- **Backend Integration Tests**: 20/20 test cases pass (authentication, leave calculation engine, balance holds, role guards, admin actions).
+- **Frontend Component Tests**: 5/5 test cases pass (login rendering, dashboard layout, quota stat cards, notification dropdown).
+- **Production Asset Build**: Clean production build outputs bundled assets into `frontend/dist/`.
 
 ---
 
-## 9. Production Deployment Guide
+## 11. Author & License
 
-The application is structured for cloud deployment following industry standards:
-
-```text
-React Frontend (Vercel)
-       │ (HTTPS REST API / JSON)
-       ▼
-Express API Backend (Render / Railway)
-       │ (Mongoose TLS Connection)
-       ▼
-MongoDB Atlas (Cloud Managed Database)
-```
-
-### Database Deployment (MongoDB Atlas)
-1. Create a free-tier cluster on [MongoDB Atlas](https://www.mongodb.com/atlas).
-2. Create a database user (e.g. `lms_admin`) with read/write privileges.
-3. In Network Access, whitelist `0.0.0.0/0` (allow access from anywhere) or configure your hosting provider IPs.
-4. Copy the connection URI:
-   `mongodb+srv://<user>:<password>@cluster0.mongodb.net/leave_management?retryWrites=true&w=majority`
-
-### Backend Deployment (Render)
-1. Create a **Web Service** on Render connected to your GitHub repository.
-2. Root Directory: `backend`
-3. Environment: `Node`
-4. Build Command: `npm install`
-5. Start Command: `npm start`
-6. Add Environment Variables:
-   - `NODE_ENV`: `production`
-   - `PORT`: `10000`
-   - `MONGODB_URI`: `<Your MongoDB Atlas connection URI>`
-   - `JWT_SECRET`: `<Generate a 64-char random string>`
-   - `JWT_EXPIRES_IN`: `1d`
-   - `CLIENT_URL`: `https://<your-vercel-app>.vercel.app`
-   - `ADMIN_EMAIL`: `admin@example.com`
-   - `ADMIN_PASSWORD`: `Admin@SecurePassword2026`
-
-### Frontend Deployment (Vercel)
-1. Import repository on [Vercel](https://vercel.com).
-2. Root Directory: `frontend`
-3. Framework Preset: `Vite`
-4. Build Command: `npm run build`
-5. Output Directory: `dist`
-6. Environment Variables:
-   - `VITE_API_BASE_URL`: `https://<your-render-backend>.onrender.com/api`
-
----
-
-## 10. License & Author
-- **Project**: Leave Management System (LMS)
-- **License**: ISC
-- **Architecture**: MERN Stack (React, Express, Node, MongoDB)
-
-#   L e a v e - M a n a g e m e n t - S y s t e m  
- 
+- **Author**: [VishwambharBK](https://github.com/VishwambharBK)
+- **License**: ISC License
