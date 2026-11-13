@@ -5,6 +5,7 @@
   "main": "backend/server.js",
   "scripts": {
     "install:all": "npm --prefix backend install && npm --prefix frontend install",
+    "dev": "concurrently -n \"backend,frontend\" -c \"blue,green\" \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "npm --prefix backend run dev",
     "dev:frontend": "npm --prefix frontend run dev",
     "seed": "npm --prefix backend run seed",
@@ -24,6 +25,8 @@
     "tailwind"
   ],
   "author": "LMS Development Team",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^10.0.7"
+  }
 }
-
