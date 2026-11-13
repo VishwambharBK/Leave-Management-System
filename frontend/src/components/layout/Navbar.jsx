@@ -17,8 +17,8 @@ export const Navbar = ({ onToggleSidebar }) => {
           <Menu className="h-5 w-5" />
         </button>
         <div className="hidden sm:block">
-          <span className="text-xs font-semibold tracking-wider uppercase text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md">
-            {user?.role === 'admin' ? 'Administrator Workspace' : 'Employee Portal'}
+          <span className="inline-flex items-center justify-center min-w-[210px] h-8 text-xs font-semibold tracking-wider uppercase text-blue-600 bg-blue-50 border border-blue-100/80 px-4 py-1.5 rounded-lg shadow-xs transition-all">
+            {user?.role === 'admin' ? 'Administrator Workspace' : 'Employee Workspace'}
           </span>
         </div>
       </div>
@@ -32,9 +32,9 @@ export const Navbar = ({ onToggleSidebar }) => {
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-navy-900 text-white font-semibold text-xs shadow-xs">
             {user?.name ? user.name.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
           </div>
-          <div className="hidden md:block text-left">
-            <p className="text-sm font-semibold text-slate-900 leading-tight">{user?.name}</p>
-            <p className="text-xs text-slate-500 capitalize">{user?.designation || user?.role}</p>
+          <div className="hidden md:block text-left min-w-[120px]">
+            <p className="text-sm font-semibold text-slate-900 leading-tight truncate">{user?.name}</p>
+            <p className="text-xs text-slate-500 capitalize truncate">{user?.designation || user?.role}</p>
           </div>
 
           <button
