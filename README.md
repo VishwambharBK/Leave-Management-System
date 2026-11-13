@@ -196,13 +196,19 @@ npm run dev
 
 ---
 
-## 8. Demo Credentials
+## 8. Account Provisioning & Access
 
-| Role | Name | Email | Password | Assigned Permissions |
-| :--- | :--- | :--- | :--- | :--- |
-| **System Admin** | System Administrator | `admin@exelon.com` | `Admin@123456` | Full administrative access, leave reviews, staff provisioning, policy configuration |
-| **Employee** | Vishwambhara | `vishwambhara@exelon.com` | `Employee@123` | Employee portal, leave filings, balance tracking, personal history |
-| **Employee** | Aneesh | `aneesh@exelon.com` | `Employee@123` | Employee portal, leave filings, balance tracking, personal history |
+Initial administrative and employee access is provisioned securely through the database seed utility or the administrative dashboard:
+
+1. **System Administrator Provisioning**:
+   Initialize organization leave policies and administrative access by executing the database seed script:
+   ```bash
+   npm run seed
+   ```
+   *Note: Custom administrator email and password can be configured via environment variables (`ADMIN_EMAIL`, `ADMIN_PASSWORD`) prior to executing the seed command.*
+
+2. **Employee Provisioning**:
+   Additional staff members are onboarded directly through the Admin Portal (**Employees -> Add New Employee**), generating secure temporary passwords with forced password updates on first login.
 
 ---
 

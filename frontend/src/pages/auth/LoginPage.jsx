@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
-import { Building2, Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Building2, Lock, Mail, ArrowRight } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.string().trim().email('Please enter a valid email address'),
@@ -21,7 +21,6 @@ export const LoginPage = () => {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(loginSchema),
@@ -47,11 +46,6 @@ export const LoginPage = () => {
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const handleFillCredentials = (email, password) => {
-    setValue('email', email);
-    setValue('password', password);
   };
 
   return (
@@ -124,39 +118,6 @@ export const LoginPage = () => {
               )}
             </button>
           </form>
-
-          {/* Quick Demo Credentials Switcher */}
-          <div className="mt-6 border-t border-slate-100 pt-5">
-            <p className="text-center text-xs font-medium text-slate-500 mb-3">
-              Quick Sign-in (Demo Profiles):
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => handleFillCredentials('admin@exelon.com', 'Admin@123456')}
-                className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition"
-              >
-                <ShieldCheck className="h-3.5 w-3.5 text-blue-600 shrink-0" />
-                <span>Admin</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleFillCredentials('vishwambhara@exelon.com', 'Employee@123')}
-                className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 transition"
-              >
-                <Building2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-                <span className="truncate">Vishwambhara</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleFillCredentials('aneesh@exelon.com', 'Employee@123')}
-                className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-200 transition"
-              >
-                <Building2 className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
-                <span className="truncate">Aneesh</span>
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>

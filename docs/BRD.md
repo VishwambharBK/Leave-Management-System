@@ -278,7 +278,7 @@ VITE_API_URL=https://leave-management-system-production.up.railway.app/api
    MONGO_URI="<your-mongodb-atlas-uri>" npm --prefix backend run seed
    ```
 2. Navigate to the live Vercel URL in your browser.
-3. Log in with the initial administrator credentials (`admin@lms.local` / `Admin@123456`).
+3. Log in with the administrator credentials configured during seeding.
 4. Provision a new employee, log out, log in as that employee, and file a leave request.
 5. Log back in as Administrator, review the request in the pending queue, approve it with remarks, and ensure that balance deductions reflect accurately.
 
