@@ -166,7 +166,7 @@ export const EmployeeDashboard = () => {
       {/* Visual Analytics Section */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Leave Type Breakdown Bar Chart */}
-        <div className="col-span-2 rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+        <div className="lg:col-span-2 rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 shadow-xs">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <div>
               <h3 className="text-base font-semibold text-slate-900">Leave Balance by Category</h3>

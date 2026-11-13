@@ -12,6 +12,7 @@ import {
   LogOut,
   Building2,
   CalendarCheck2,
+  X,
 } from 'lucide-react';
 
 export const Sidebar = ({ isOpen, onClose }) => {
@@ -53,14 +54,23 @@ export const Sidebar = ({ isOpen, onClose }) => {
         }`}
       >
         {/* Brand header */}
-        <div className="flex h-20 min-h-[80px] shrink-0 items-center gap-3 border-b border-navy-900 px-6">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white shadow-md">
-            <Building2 className="h-5 w-5" />
+        <div className="flex h-20 min-h-[80px] shrink-0 items-center justify-between border-b border-navy-900 px-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white shadow-md">
+              <Building2 className="h-5 w-5" />
+            </div>
+            <div>
+              <h1 className="text-base font-bold tracking-tight text-white leading-tight">LeaveFlow</h1>
+              <p className="text-[11px] text-slate-400">Enterprise LMS</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-base font-bold tracking-tight text-white leading-tight">LeaveFlow</h1>
-            <p className="text-[11px] text-slate-400">Enterprise LMS</p>
-          </div>
+          <button
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-slate-400 hover:bg-navy-900 hover:text-white lg:hidden transition"
+            aria-label="Close Navigation"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
 
         {/* Navigation items */}

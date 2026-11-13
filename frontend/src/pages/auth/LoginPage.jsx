@@ -58,7 +58,7 @@ export const LoginPage = () => {
     <div className="flex min-h-screen bg-slate-100 items-center justify-center p-4">
       <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
         {/* Header Banner */}
-        <div className="bg-navy-950 px-8 py-8 text-center text-white">
+        <div className="bg-navy-950 px-6 sm:px-8 py-6 sm:py-8 text-center text-white">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 shadow-lg">
             <Building2 className="h-6 w-6" />
           </div>
@@ -67,7 +67,7 @@ export const LoginPage = () => {
         </div>
 
         {/* Login Form */}
-        <div className="p-8">
+        <div className="p-6 sm:p-8">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700">Email Address</label>

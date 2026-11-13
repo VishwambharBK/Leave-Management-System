@@ -30,7 +30,7 @@ export const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-lg' 
 
       {/* Modal Dialog */}
       <div
-        className={`relative z-10 w-full ${maxWidth} rounded-2xl bg-white p-6 shadow-2xl transition-all duration-200 border border-slate-100 animate-in fade-in zoom-in-95`}
+        className={`relative z-10 w-full ${maxWidth} max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl bg-white p-4 sm:p-6 shadow-2xl transition-all duration-200 border border-slate-100 animate-in fade-in zoom-in-95`}
       >
         <div className="flex items-center justify-between border-b border-slate-100 pb-4">
           <h3 className="text-lg font-semibold text-slate-900">{title}</h3>

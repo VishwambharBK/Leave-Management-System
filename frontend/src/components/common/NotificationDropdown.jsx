@@ -80,7 +80,7 @@ export const NotificationDropdown = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl border border-slate-200 bg-white shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95">
+        <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-sm sm:w-96 rounded-2xl border border-slate-200 bg-white shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95">
           <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 bg-slate-50">
             <div className="flex items-center gap-2">
               <h4 className="font-semibold text-slate-800 text-sm">Notifications</h4>
