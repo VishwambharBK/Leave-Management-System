@@ -4,7 +4,7 @@
   "description": "REST API Backend for Leave Management System",
   "main": "server.js",
   "scripts": {
-    "start": "node --no-webstorage server.js",
+    "start": "node server.js",
     "dev": "nodemon --exec \"node --no-webstorage\" server.js",
     "seed": "node --no-webstorage scripts/seedAdmin.js",
     "test": "cross-env NODE_OPTIONS=--no-webstorage NODE_ENV=test jest --runInBand --detectOpenHandles --forceExit"

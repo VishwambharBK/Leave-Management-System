@@ -3,23 +3,28 @@ const mongoose = require('mongoose');
 let mongodInstance = null;
 
 const connectDB = async () => {
-  const uri = process.env.MONGODB_URI;
+  const uri = process.env.MONGO_URI || process.env.MONGODB_URI;
 
   try {
     if (uri && uri.trim().length > 0 && process.env.NODE_ENV !== 'test') {
       try {
         await mongoose.connect(uri, {
-          serverSelectionTimeoutMS: 3000,
+          serverSelectionTimeoutMS: 5000,
         });
         console.log(`[MongoDB] Connected successfully to: ${mongoose.connection.host}`);
         return mongoose.connection;
       } catch (err) {
-        console.warn(`[MongoDB] Direct connection to URI failed: ${err.message}.`);
+        console.error(`[MongoDB] Connection to MongoDB failed: ${err.message}`);
         if (process.env.NODE_ENV === 'production') {
-          throw err;
+          process.exit(1);
         }
         console.log('[MongoDB] Falling back to in-memory MongoDB instance for development/testing...');
       }
+    }
+
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[MongoDB] Critical: MONGO_URI environment variable is not defined in production.');
+      process.exit(1);
     }
 
     // In-memory fallback if direct connection failed or in test environment
