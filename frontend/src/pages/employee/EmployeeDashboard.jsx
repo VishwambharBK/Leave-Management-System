@@ -91,28 +91,28 @@ export const EmployeeDashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* Welcome Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-gradient-to-r from-navy-950 via-navy-900 to-blue-900 p-6 text-white shadow-md">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Welcome back, {user?.name}!</h2>
-          <p className="mt-1 text-sm text-slate-300">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900">Welcome back, {user?.name}!</h2>
+          <p className="text-sm text-slate-500">
             {user?.department} • {user?.designation} ({user?.employeeId})
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex items-center gap-3">
           <Link
             to="/apply-leave"
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition"
+            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-blue-700 transition"
           >
             <PlusCircle className="h-4 w-4" />
             <span>Apply Leave</span>
           </Link>
           <Link
             to="/leave-history"
-            className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/20 transition"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-xs hover:bg-slate-50 transition"
           >
             <History className="h-4 w-4" />
-            <span>History</span>
+            <span>Leave History</span>
           </Link>
         </div>
       </div>

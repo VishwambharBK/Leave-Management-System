@@ -129,16 +129,10 @@ export const ApplyLeavePage = () => {
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      {/* Page Header */}
+    <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <button
-            onClick={() => navigate(-1)}
-            className="mb-2 flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-800 transition"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" /> Back
-          </button>
           <h2 className="text-2xl font-bold tracking-tight text-slate-900">Apply for Leave</h2>
           <p className="text-sm text-slate-500">
             Submit a new time-off request with automatic working-day calculations.
