@@ -84,6 +84,16 @@ if (process.env.NODE_ENV !== 'test') {
   app.use('/api/auth/login', loginLimiter);
 }
 
+// Root welcome endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Leave Management System (LMS) API is online and operational.',
+    health: '/api/health',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({
