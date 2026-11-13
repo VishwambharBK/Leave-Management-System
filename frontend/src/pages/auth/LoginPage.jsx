@@ -130,22 +130,30 @@ export const LoginPage = () => {
             <p className="text-center text-xs font-medium text-slate-500 mb-3">
               Quick Sign-in (Demo Profiles):
             </p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
-                onClick={() => handleFillCredentials('admin@example.com', 'Admin@123456')}
-                className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition"
+                onClick={() => handleFillCredentials('admin@exelon.com', 'Admin@123456')}
+                className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition"
               >
-                <ShieldCheck className="h-3.5 w-3.5 text-blue-600" />
+                <ShieldCheck className="h-3.5 w-3.5 text-blue-600 shrink-0" />
                 <span>Admin</span>
               </button>
               <button
                 type="button"
-                onClick={() => handleFillCredentials('sarah.connor@example.com', 'Employee@123')}
-                className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 transition"
+                onClick={() => handleFillCredentials('vishwambhara@exelon.com', 'Employee@123')}
+                className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 transition"
               >
-                <Building2 className="h-3.5 w-3.5 text-emerald-600" />
-                <span>Employee</span>
+                <Building2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                <span className="truncate">Vishwambhara</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleFillCredentials('aneesh@exelon.com', 'Employee@123')}
+                className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-200 transition"
+              >
+                <Building2 className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
+                <span className="truncate">Aneesh</span>
               </button>
             </div>
           </div>

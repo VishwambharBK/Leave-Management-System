@@ -200,10 +200,9 @@ npm run dev
 
 | Role | Name | Email | Password | Assigned Permissions |
 | :--- | :--- | :--- | :--- | :--- |
-| **System Admin** | System Administrator | `admin@lms.local` | `Admin@123456` | Full administrative access, leave reviews, staff provisioning, policy configuration |
-| **Employee** | Alex Morgan | `alex.morgan@lms.local` | `Employee@123` | Employee portal, leave filings, balance tracking, personal history |
-| **Employee** | Sarah Jenkins | `sarah.jenkins@lms.local` | `Employee@123` | Employee portal, leave filings, balance tracking |
-| **Employee** | David Chen | `david.chen@lms.local` | `Employee@123` | Employee portal, leave filings, balance tracking |
+| **System Admin** | System Administrator | `admin@exelon.com` | `Admin@123456` | Full administrative access, leave reviews, staff provisioning, policy configuration |
+| **Employee** | Vishwambhara | `vishwambhara@exelon.com` | `Employee@123` | Employee portal, leave filings, balance tracking, personal history |
+| **Employee** | Aneesh | `aneesh@exelon.com` | `Employee@123` | Employee portal, leave filings, balance tracking, personal history |
 
 ---
 

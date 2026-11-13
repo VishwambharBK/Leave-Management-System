@@ -12,12 +12,14 @@ const seedData = async () => {
     console.log('[Seed] Connecting to database...');
     await connectDB();
 
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@exelon.com';
     const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@123456';
     const adminName = process.env.ADMIN_NAME || 'System Administrator';
 
     console.log('[Seed] Ensuring administrator account...');
-    let admin = await User.findOne({ email: adminEmail.toLowerCase() });
+    let admin = await User.findOne({
+      $or: [{ email: adminEmail.toLowerCase() }, { role: 'admin' }, { employeeId: 'ADM001' }],
+    });
     if (!admin) {
       admin = await User.create({
         name: adminName,
@@ -31,7 +33,12 @@ const seedData = async () => {
       });
       console.log(`[Seed] Administrator account created: ${admin.email}`);
     } else {
-      console.log(`[Seed] Administrator already exists: ${admin.email}`);
+      admin.email = adminEmail.toLowerCase();
+      admin.name = adminName;
+      admin.password = adminPassword;
+      admin.isActive = true;
+      await admin.save();
+      console.log(`[Seed] Administrator account ready: ${admin.email}`);
     }
 
     // Default leave policies for current year
@@ -56,32 +63,22 @@ const seedData = async () => {
     // Sample employees for development
     const sampleEmployees = [
       {
-        name: 'Sarah Connor',
+        name: 'Vishwambhara',
         employeeId: 'EMP001',
-        email: 'sarah.connor@example.com',
+        email: 'vishwambhara@exelon.com',
         password: 'Employee@123',
         department: 'Engineering',
-        designation: 'Senior Full Stack Engineer',
+        designation: 'Senior Software Engineer',
         role: 'employee',
         isActive: true,
       },
       {
-        name: 'Michael Scott',
+        name: 'Aneesh',
         employeeId: 'EMP002',
-        email: 'michael.scott@example.com',
+        email: 'aneesh@exelon.com',
         password: 'Employee@123',
-        department: 'Sales',
-        designation: 'Regional Sales Manager',
-        role: 'employee',
-        isActive: true,
-      },
-      {
-        name: 'Pam Beesly',
-        employeeId: 'EMP003',
-        email: 'pam.beesly@example.com',
-        password: 'Employee@123',
-        department: 'Human Resources',
-        designation: 'HR Coordinator',
+        department: 'Operations',
+        designation: 'Product Specialist',
         role: 'employee',
         isActive: true,
       },
@@ -90,12 +87,21 @@ const seedData = async () => {
     console.log('[Seed] Ensuring sample employees...');
     const createdEmployees = [];
     for (const empData of sampleEmployees) {
-      let emp = await User.findOne({ email: empData.email });
+      let emp = await User.findOne({
+        $or: [{ email: empData.email.toLowerCase() }, { employeeId: empData.employeeId }],
+      });
       if (!emp) {
         emp = await User.create(empData);
         console.log(`[Seed] Created employee: ${emp.name} (${emp.email})`);
       } else {
-        console.log(`[Seed] Employee exists: ${emp.name}`);
+        emp.name = empData.name;
+        emp.email = empData.email.toLowerCase();
+        emp.department = empData.department;
+        emp.designation = empData.designation;
+        emp.password = empData.password;
+        emp.isActive = true;
+        await emp.save();
+        console.log(`[Seed] Updated employee: ${emp.name} (${emp.email})`);
       }
       createdEmployees.push(emp);
     }
