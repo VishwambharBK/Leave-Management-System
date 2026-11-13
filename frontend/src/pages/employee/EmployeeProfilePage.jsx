@@ -83,7 +83,7 @@ export const EmployeeProfilePage = () => {
   };
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6">
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold tracking-tight text-slate-900">Personal Profile & Security</h2>
